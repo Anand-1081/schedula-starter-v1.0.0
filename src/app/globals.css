@@ -1,7 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 :root {
   --canvas: #f7f8f6;
   --ink: #1b2925;
@@ -9,49 +8,42 @@
   --line: #dce2de;
   --brand: #0e6b56;
   --brand-deep: #08483a;
+  --paper: #ffffff;
 }
-
-* {
-  box-sizing: border-box;
-}
-
-html {
-  background: var(--canvas);
-}
-
-body {
-  margin: 0;
-  background: var(--canvas);
-  color: var(--ink);
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-button,
-a {
-  -webkit-tap-highlight-color: transparent;
-}
-
-button {
-  cursor: pointer;
-}
-
-button:focus-visible,
-a:focus-visible {
-  outline: 3px solid #8fd6c2;
-  outline-offset: 3px;
-}
+* { box-sizing: border-box; }
+html { background: var(--canvas); }
+body { background: var(--canvas); color: var(--ink); font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif; }
+button, a { -webkit-tap-highlight-color: transparent; }
+button { cursor: pointer; }
+button:focus-visible, a:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 3px solid #8fd6c2; outline-offset: 3px; }
 
 @media (prefers-reduced-motion: no-preference) {
-  button,
-  a {
-    transition:
-      transform 160ms cubic-bezier(0.23, 1, 0.32, 1),
-      background-color 160ms ease,
-      color 160ms ease,
-      border-color 160ms ease;
-  }
-
-  button:active {
-    transform: scale(0.97);
-  }
+  button, a { transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), background-color 160ms ease, color 160ms ease, border-color 160ms ease; }
+  button:active { transform: scale(0.97); }
 }
+
+/*
+ * Signature motif: the "appointment stub". A perforated tear-line, like the
+ * carbon-copy slip a clinic hands you after booking. Used sparingly on
+ * confirmations, the booking summary, and the login card — the moments
+ * that feel like receiving a physical slip of paper.
+ */
+.stub-tear {
+  position: relative;
+  border-top: 1.5px dashed var(--line);
+}
+.stub-tear::before,
+.stub-tear::after {
+  content: "";
+  position: absolute;
+  top: -9px;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--canvas);
+  border: 1.5px solid var(--line);
+}
+.stub-tear::before { left: -10px; }
+.stub-tear::after { right: -10px; }
+
+.tabular { font-variant-numeric: tabular-nums; }
