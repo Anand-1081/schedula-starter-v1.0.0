@@ -1,6 +1,7 @@
 ﻿import type { Metadata } from "next";
 import { Fraunces, Geist, Geist_Mono } from "next/font/google";
 import { SessionProvider } from "@/features/auth/hooks/use-session";
+import { DoctorSessionProvider } from "@/features/doctor-portal/hooks/use-doctor-session";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -32,7 +33,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <SessionProvider>{children}</SessionProvider>
+        <SessionProvider>
+          <DoctorSessionProvider>{children}</DoctorSessionProvider>
+        </SessionProvider>
       </body>
     </html>
   );

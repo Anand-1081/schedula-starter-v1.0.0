@@ -1,4 +1,4 @@
-import { doctors } from "@/lib/mock-data/doctors";
+import { bookings, doctorAccounts } from "@/lib/mock-data/store";
 import { getAvailability } from "@/lib/mock-data/availability";
 import type { BookingConfirmation, BookingRequest } from "@/types/booking";
 
@@ -8,13 +8,13 @@ function confirmationCode(): string {
 
 export async function POST(request: Request) {
   const body = (await request.json()) as Partial<BookingRequest>;
-  const { doctorId, date, time, patientName, reason } = body;
+  const { doctorId, date, time, patientName, patientAge, reason } = body;
 
   if (!doctorId || !date || !time || !patientName || !reason) {
     return Response.json({ error: "Missing required booking fields" }, { status: 400 });
   }
 
-  const doctor = doctors.find((item) => item.id === doctorId);
+  const doctor = doctorAccounts.find((item) => item.id === doctorId);
   if (!doctor) {
     return Response.json({ error: "Doctor not found" }, { status: 404 });
   }
@@ -35,9 +35,13 @@ export async function POST(request: Request) {
     date,
     time,
     patientName,
+    patientAge: Number(patientAge) || 0,
     reason,
     createdAt: new Date().toISOString(),
+    status: "pending",
   };
+
+  bookings.push(confirmation);
 
   return Response.json({ data: confirmation }, { status: 201 });
 }

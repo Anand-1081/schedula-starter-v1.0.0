@@ -18,6 +18,8 @@ export type BookingRequest = {
   reason: string;
 };
 
+export type AppointmentStatus = "pending" | "confirmed";
+
 export type BookingConfirmation = {
   id: string;
   confirmationCode: string;
@@ -28,6 +30,8 @@ export type BookingConfirmation = {
   date: string;
   time: string;
   patientName: string;
+  patientAge: number;
   reason: string;
   createdAt: string;
+  status: AppointmentStatus;
 };
