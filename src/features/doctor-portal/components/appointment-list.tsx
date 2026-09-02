@@ -9,12 +9,13 @@ type Props = {
   appointments: BookingConfirmation[];
   status: "loading" | "ready" | "error";
   onConfirm?: (id: string) => void;
+  onCancel?: (id: string) => void;
   showFilter?: boolean;
   emptyMessage?: string;
   mutationError?: string;
 };
 
-export function AppointmentList({ appointments, status, onConfirm, showFilter = false, emptyMessage, mutationError }: Props) {
+export function AppointmentList({ appointments, status, onConfirm, onCancel, showFilter = false, emptyMessage, mutationError }: Props) {
   const [filter, setFilter] = useState<AppointmentFilter>("all");
 
   const visible = useMemo(
@@ -27,6 +28,7 @@ export function AppointmentList({ appointments, status, onConfirm, showFilter = 
       all: appointments.length,
       pending: appointments.filter((item) => item.status === "pending").length,
       confirmed: appointments.filter((item) => item.status === "confirmed").length,
+      cancelled: appointments.filter((item) => item.status === "cancelled").length,
     }),
     [appointments],
   );
@@ -42,7 +44,7 @@ export function AppointmentList({ appointments, status, onConfirm, showFilter = 
       {showFilter && (
         <div className="flex items-center gap-1 border-b border-[var(--line)] p-3">
           <div className="flex gap-1 rounded-lg bg-stone-100 p-1" role="group" aria-label="Filter appointments">
-            {(["all", "pending", "confirmed"] as AppointmentFilter[]).map((item) => (
+            {(["all", "pending", "confirmed", "cancelled"] as AppointmentFilter[]).map((item) => (
               <button
                 key={item}
                 type="button"
@@ -75,7 +77,7 @@ export function AppointmentList({ appointments, status, onConfirm, showFilter = 
       {status === "ready" && visible.length > 0 && (
         <ul className="divide-y divide-[var(--line)]" role="list">
           {visible.map((appointment) => (
-            <AppointmentRow key={appointment.id} appointment={appointment} onConfirm={onConfirm} />
+            <AppointmentRow key={appointment.id} appointment={appointment} onConfirm={onConfirm} onCancel={onCancel} />
           ))}
         </ul>
       )}

@@ -24,4 +24,4 @@ export type ProfileFormValues = {
   phone: string;
 };
 
-export type AppointmentFilter = "all" | "pending" | "confirmed";
+export type AppointmentFilter = "all" | "pending" | "confirmed" | "cancelled";

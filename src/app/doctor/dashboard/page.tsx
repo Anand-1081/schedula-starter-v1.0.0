@@ -20,6 +20,8 @@ export default function DoctorDashboardPage() {
   const today = useMemo(() => toIsoDate(new Date()), []);
   const upcoming = useMemo(() => appointments.filter((item) => item.date >= today), [appointments, today]);
   const pendingCount = appointments.filter((item) => item.status === "pending").length;
+  const confirmedCount = appointments.filter((item) => item.status === "confirmed").length;
+  const cancelledCount = appointments.filter((item) => item.status === "cancelled").length;
 
   if (sessionStatus !== "signed-in" || !session) {
     return (
@@ -53,12 +55,32 @@ export default function DoctorDashboardPage() {
           </div>
         </div>
 
+        <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="rounded-xl border border-[var(--line)] bg-white p-4">
+            <p className="text-xs font-medium uppercase tracking-wide text-[var(--muted)]">Total</p>
+            <p className="mt-1 text-2xl font-semibold">{appointments.length}</p>
+          </div>
+          <div className="rounded-xl border border-[var(--line)] bg-white p-4">
+            <p className="text-xs font-medium uppercase tracking-wide text-amber-700">Pending</p>
+            <p className="mt-1 text-2xl font-semibold text-amber-800">{pendingCount}</p>
+          </div>
+          <div className="rounded-xl border border-[var(--line)] bg-white p-4">
+            <p className="text-xs font-medium uppercase tracking-wide text-emerald-700">Confirmed</p>
+            <p className="mt-1 text-2xl font-semibold text-emerald-800">{confirmedCount}</p>
+          </div>
+          <div className="rounded-xl border border-[var(--line)] bg-white p-4">
+            <p className="text-xs font-medium uppercase tracking-wide text-stone-600">Cancelled</p>
+            <p className="mt-1 text-2xl font-semibold text-stone-700">{cancelledCount}</p>
+          </div>
+        </div>
+
         <div className="mt-8">
           <h2 className="mb-3 font-semibold">Upcoming appointments</h2>
           <AppointmentList
             appointments={upcoming}
             status={status}
             onConfirm={(id) => setStatusFor(id, "confirmed")}
+            onCancel={(id) => setStatusFor(id, "cancelled")}
             emptyMessage="No upcoming appointments yet."
             mutationError={mutationError}
           />

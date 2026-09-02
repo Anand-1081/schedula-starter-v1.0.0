@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useDoctorSession } from "@/features/doctor-portal/hooks/use-doctor-session";
 import { LogOutIcon } from "@/components/ui/icons";
 
@@ -12,8 +12,14 @@ const NAV_LINKS = [
 
 export function DoctorShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const { session, status, signOut } = useDoctorSession();
   const minimal = pathname === "/doctor/login" || pathname === "/doctor/register";
+
+  function handleSignOut() {
+    signOut();
+    router.push("/doctor/login");
+  }
 
   return (
     <div className="flex min-h-full flex-col">
@@ -57,7 +63,7 @@ export function DoctorShell({ children }: { children: React.ReactNode }) {
               </span>
               <button
                 type="button"
-                onClick={signOut}
+                onClick={handleSignOut}
                 className="flex items-center gap-1.5 text-sm font-medium text-[var(--muted)] hover:text-[var(--ink)]"
               >
                 <LogOutIcon className="size-4" aria-hidden="true" />

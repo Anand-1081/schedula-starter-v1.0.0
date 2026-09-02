@@ -37,6 +37,7 @@ export default function DoctorAppointmentsPage() {
             appointments={appointments}
             status={status}
             onConfirm={(id) => setStatusFor(id, "confirmed")}
+            onCancel={(id) => setStatusFor(id, "cancelled")}
             showFilter
             emptyMessage="No appointments yet."
             mutationError={mutationError}

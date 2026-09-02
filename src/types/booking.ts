@@ -18,7 +18,7 @@ export type BookingRequest = {
   reason: string;
 };
 
-export type AppointmentStatus = "pending" | "confirmed";
+export type AppointmentStatus = "pending" | "confirmed" | "cancelled";
 
 export type BookingConfirmation = {
   id: string;

@@ -22,12 +22,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, [tabindex]:focus-vis
   button:active { transform: scale(0.97); }
 }
 
-/*
- * Signature motif: the "appointment stub". A perforated tear-line, like the
- * carbon-copy slip a clinic hands you after booking. Used sparingly on
- * confirmations, the booking summary, and the login card — the moments
- * that feel like receiving a physical slip of paper.
- */
 .stub-tear {
   position: relative;
   border-top: 1.5px dashed var(--line);
