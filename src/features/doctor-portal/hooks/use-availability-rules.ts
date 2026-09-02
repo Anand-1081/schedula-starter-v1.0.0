@@ -50,8 +50,14 @@ export function useAvailabilityRules(doctorId: string | undefined) {
   const removeRule = useCallback(
     async (ruleId: string) => {
       if (!doctorId) return;
-      await deleteAvailabilityRule(doctorId, ruleId);
-      setRules((prev) => prev.filter((rule) => rule.id !== ruleId));
+      setMutationError(undefined);
+      try {
+        await deleteAvailabilityRule(doctorId, ruleId);
+        setRules((prev) => prev.filter((rule) => rule.id !== ruleId));
+      } catch (error) {
+        setMutationError(error instanceof Error ? error.message : "Unable to remove availability.");
+        throw error;
+      }
     },
     [doctorId],
   );

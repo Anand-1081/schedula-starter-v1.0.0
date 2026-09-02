@@ -62,7 +62,7 @@ export const doctors: Doctor[] = [
     consultFee: 900,
   },
   {
-    id: "doc-anika-rao-2",
+    id: "doc-owen-fischer",
     name: "Dr. Owen Fischer",
     initials: "OF",
     specialty: "General medicine",

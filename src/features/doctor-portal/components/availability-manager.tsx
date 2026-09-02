@@ -54,6 +54,8 @@ export function AvailabilityManager({ doctorId }: { doctorId: string }) {
     setRemovingId(ruleId);
     try {
       await removeRule(ruleId);
+    } catch {
+      // mutationError from the hook already surfaces this in the UI.
     } finally {
       setRemovingId(undefined);
     }

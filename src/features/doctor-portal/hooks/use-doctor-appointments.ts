@@ -8,6 +8,7 @@ type Status = "loading" | "ready" | "error";
 export function useDoctorAppointments(doctorId: string | undefined) {
   const [appointments, setAppointments] = useState<BookingConfirmation[]>([]);
   const [status, setStatus] = useState<Status>("loading");
+  const [mutationError, setMutationError] = useState<string>();
 
   const reload = useCallback(() => {
     if (!doctorId) return;
@@ -30,11 +31,16 @@ export function useDoctorAppointments(doctorId: string | undefined) {
   const setStatusFor = useCallback(
     async (bookingId: string, next: AppointmentStatus) => {
       if (!doctorId) return;
-      const updated = await updateAppointmentStatus(doctorId, bookingId, next);
-      setAppointments((prev) => prev.map((item) => (item.id === updated.id ? updated : item)));
+      setMutationError(undefined);
+      try {
+        const updated = await updateAppointmentStatus(doctorId, bookingId, next);
+        setAppointments((prev) => prev.map((item) => (item.id === updated.id ? updated : item)));
+      } catch (error) {
+        setMutationError(error instanceof Error ? error.message : "Unable to update this appointment.");
+      }
     },
     [doctorId],
   );
 
-  return { appointments, status, reload, setStatusFor };
+  return { appointments, status, reload, setStatusFor, mutationError };
 }

@@ -47,7 +47,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           )}
 
           {!minimal && status !== "loading" && (
-            <div>
+            <div className="flex items-center gap-4">
+              <Link
+                href="/doctor/login"
+                className="hidden text-sm font-medium text-[var(--muted)] hover:text-[var(--ink)] sm:inline"
+              >
+                Doctor portal
+              </Link>
               {session ? (
                 <div className="flex items-center gap-3">
                   <span className="grid size-8 place-items-center rounded-full bg-emerald-100 text-xs font-semibold text-[var(--brand-deep)]">

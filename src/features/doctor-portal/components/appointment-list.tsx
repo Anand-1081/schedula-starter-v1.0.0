@@ -1,6 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import { AppointmentRow } from "@/features/doctor-portal/components/appointment-row";
+import { AlertIcon } from "@/components/ui/icons";
 import type { BookingConfirmation } from "@/types/booking";
 import type { AppointmentFilter } from "@/features/doctor-portal/types";
 
@@ -10,9 +11,10 @@ type Props = {
   onConfirm?: (id: string) => void;
   showFilter?: boolean;
   emptyMessage?: string;
+  mutationError?: string;
 };
 
-export function AppointmentList({ appointments, status, onConfirm, showFilter = false, emptyMessage }: Props) {
+export function AppointmentList({ appointments, status, onConfirm, showFilter = false, emptyMessage, mutationError }: Props) {
   const [filter, setFilter] = useState<AppointmentFilter>("all");
 
   const visible = useMemo(
@@ -31,6 +33,12 @@ export function AppointmentList({ appointments, status, onConfirm, showFilter = 
 
   return (
     <div className="overflow-hidden rounded-xl border border-[var(--line)] bg-white">
+      {mutationError && (
+        <div role="alert" className="flex items-start gap-2 border-b border-[var(--line)] bg-red-50 px-5 py-3 text-sm text-red-800">
+          <AlertIcon className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+          <span>{mutationError}</span>
+        </div>
+      )}
       {showFilter && (
         <div className="flex items-center gap-1 border-b border-[var(--line)] p-3">
           <div className="flex gap-1 rounded-lg bg-stone-100 p-1" role="group" aria-label="Filter appointments">

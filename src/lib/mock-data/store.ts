@@ -15,7 +15,7 @@ import type { BookingConfirmation } from "@/types/booking";
  */
 
 function seedAccount(doctor: (typeof seedDoctors)[number], index: number): DoctorAccount {
-  const handle = doctor.id.replace(/^doc-/, "").replace(/-\d+$/, "");
+  const handle = doctor.id.replace(/^doc-/, "");
   return {
     ...doctor,
     email: `${handle.replace(/-/g, ".")}@schedula.clinic`,

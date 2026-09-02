@@ -11,7 +11,7 @@ import { toIsoDate } from "@/lib/utils/date";
 export default function DoctorDashboardPage() {
   const router = useRouter();
   const { session, status: sessionStatus } = useDoctorSession();
-  const { appointments, status, setStatusFor } = useDoctorAppointments(session?.doctor.id);
+  const { appointments, status, setStatusFor, mutationError } = useDoctorAppointments(session?.doctor.id);
 
   useEffect(() => {
     if (sessionStatus === "signed-out") router.replace("/doctor/login");
@@ -60,6 +60,7 @@ export default function DoctorDashboardPage() {
             status={status}
             onConfirm={(id) => setStatusFor(id, "confirmed")}
             emptyMessage="No upcoming appointments yet."
+            mutationError={mutationError}
           />
         </div>
       </div>
