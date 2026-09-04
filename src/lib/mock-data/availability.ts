@@ -34,8 +34,18 @@ export function getAvailability(doctorId: string, date: string): DayAvailability
     }
   }
 
+  // Cancelled/completed/missed visits free up their slot; only a pending or
+  // confirmed booking should block someone else (or a reschedule) from
+  // taking that time.
   const bookedTimes = new Set(
-    bookings.filter((booking) => booking.doctorId === doctorId && booking.date === date).map((booking) => booking.time),
+    bookings
+      .filter(
+        (booking) =>
+          booking.doctorId === doctorId &&
+          booking.date === date &&
+          (booking.status === "pending" || booking.status === "confirmed"),
+      )
+      .map((booking) => booking.time),
   );
 
   const slots: Slot[] = Array.from(times)

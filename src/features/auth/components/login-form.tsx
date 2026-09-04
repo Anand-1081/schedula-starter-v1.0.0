@@ -40,7 +40,7 @@ export function LoginForm() {
     setSubmitting(true);
     try {
       await signIn({ email, password, remember });
-      router.push("/");
+      router.push("/staff");
     } catch (error) {
       setFormError(error instanceof Error ? error.message : "Unable to sign in.");
     } finally {

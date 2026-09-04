@@ -6,19 +6,24 @@ import { DoctorShell } from "@/components/layout/doctor-shell";
 import { useDoctorSession } from "@/features/doctor-portal/hooks/use-doctor-session";
 import { useDoctorAppointments } from "@/features/doctor-portal/hooks/use-doctor-appointments";
 import { AppointmentList } from "@/features/doctor-portal/components/appointment-list";
-import { toIsoDate } from "@/lib/utils/date";
+import { isPastMoment } from "@/lib/utils/date";
 
 export default function DoctorDashboardPage() {
   const router = useRouter();
   const { session, status: sessionStatus } = useDoctorSession();
-  const { appointments, status, setStatusFor, mutationError } = useDoctorAppointments(session?.doctor.id);
+  const { appointments, status, runAction, mutationError } = useDoctorAppointments(session?.doctor.id);
 
   useEffect(() => {
     if (sessionStatus === "signed-out") router.replace("/doctor/login");
   }, [sessionStatus, router]);
 
-  const today = useMemo(() => toIsoDate(new Date()), []);
-  const upcoming = useMemo(() => appointments.filter((item) => item.date >= today), [appointments, today]);
+  const upcoming = useMemo(
+    () =>
+      appointments.filter(
+        (item) => (item.status === "pending" || item.status === "confirmed") && !isPastMoment(item.date, item.time),
+      ),
+    [appointments],
+  );
   const pendingCount = appointments.filter((item) => item.status === "pending").length;
   const confirmedCount = appointments.filter((item) => item.status === "confirmed").length;
   const cancelledCount = appointments.filter((item) => item.status === "cancelled").length;
@@ -46,8 +51,8 @@ export default function DoctorDashboardPage() {
             </p>
           </div>
           <div className="flex gap-2.5">
-            <Link href="/doctor/profile" className="rounded-lg border border-[var(--line)] px-4 py-2.5 text-sm font-semibold hover:border-[var(--brand)] hover:text-[var(--brand)]">
-              My profile
+            <Link href="/doctor/calendar" className="rounded-lg border border-[var(--line)] px-4 py-2.5 text-sm font-semibold hover:border-[var(--brand)] hover:text-[var(--brand)]">
+              Calendar
             </Link>
             <Link href="/doctor/appointments" className="rounded-lg bg-[var(--brand)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--brand-deep)]">
               View all appointments
@@ -79,8 +84,7 @@ export default function DoctorDashboardPage() {
           <AppointmentList
             appointments={upcoming}
             status={status}
-            onConfirm={(id) => setStatusFor(id, "confirmed")}
-            onCancel={(id) => setStatusFor(id, "cancelled")}
+            onAction={runAction}
             emptyMessage="No upcoming appointments yet."
             mutationError={mutationError}
           />

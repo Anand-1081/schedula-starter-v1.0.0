@@ -2,6 +2,7 @@
 import { Fraunces, Geist, Geist_Mono } from "next/font/google";
 import { SessionProvider } from "@/features/auth/hooks/use-session";
 import { DoctorSessionProvider } from "@/features/doctor-portal/hooks/use-doctor-session";
+import { PatientSessionProvider } from "@/features/patient/hooks/use-patient-session";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -34,7 +35,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <SessionProvider>
-          <DoctorSessionProvider>{children}</DoctorSessionProvider>
+          <DoctorSessionProvider>
+            <PatientSessionProvider>{children}</PatientSessionProvider>
+          </DoctorSessionProvider>
         </SessionProvider>
       </body>
     </html>

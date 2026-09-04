@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { AppShell } from "@/components/layout/app-shell";
+import { PatientShell } from "@/components/layout/patient-shell";
 import { ChevronLeftIcon } from "@/components/ui/icons";
 import { useBookingFlow } from "@/features/booking/hooks/use-booking-flow";
 import { BookingStepper } from "@/features/booking/components/booking-stepper";
@@ -32,29 +32,29 @@ export default function BookDoctorPage() {
 
   if (doctorStatus === "loading") {
     return (
-      <AppShell>
+      <PatientShell>
         <div className="mx-auto max-w-3xl px-4 py-10 sm:px-8">
           <div className="h-40 animate-pulse rounded-xl bg-stone-100" aria-busy="true" aria-label="Loading doctor" />
         </div>
-      </AppShell>
+      </PatientShell>
     );
   }
 
   if (doctorStatus === "error" || !doctor) {
     return (
-      <AppShell>
+      <PatientShell>
         <div className="mx-auto max-w-3xl px-4 py-10 text-center sm:px-8" role="alert">
           <p className="font-medium">We couldn&apos;t find that doctor.</p>
           <Link href="/doctors" className="mt-3 inline-block text-sm font-semibold text-[var(--brand)] underline">
             Back to the directory
           </Link>
         </div>
-      </AppShell>
+      </PatientShell>
     );
   }
 
   return (
-    <AppShell>
+    <PatientShell>
       <div className="mx-auto max-w-3xl px-4 py-8 sm:px-8 sm:py-10">
         {step === "confirmed" && confirmation ? (
           <ConfirmationTicket confirmation={confirmation} />
@@ -124,6 +124,6 @@ export default function BookDoctorPage() {
           </>
         )}
       </div>
-    </AppShell>
+    </PatientShell>
   );
 }

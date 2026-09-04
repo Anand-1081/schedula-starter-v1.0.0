@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { createBooking, getAvailability, getDoctorById } from "@/features/booking/api/booking-client";
+import { usePatientSession } from "@/features/patient/hooks/use-patient-session";
 import { toIsoDate } from "@/lib/utils/date";
 import type { Doctor } from "@/types/doctor";
 import type { BookingConfirmation, DayAvailability } from "@/types/booking";
@@ -9,6 +10,7 @@ import type { BookingStep, PatientDetails } from "@/features/booking/types";
 type LoadStatus = "loading" | "ready" | "error";
 
 export function useBookingFlow(doctorId: string) {
+  const { session } = usePatientSession();
   const [doctor, setDoctor] = useState<Doctor | null>(null);
   const [doctorStatus, setDoctorStatus] = useState<LoadStatus>("loading");
 
@@ -85,6 +87,7 @@ export function useBookingFlow(doctorId: string) {
           patientName: details.patientName,
           patientAge: Number(details.patientAge) || 0,
           reason: details.reason,
+          userId: session?.patient.id,
         });
         setConfirmation(result);
         setStep("confirmed");
@@ -94,7 +97,7 @@ export function useBookingFlow(doctorId: string) {
         setSubmitting(false);
       }
     },
-    [doctorId, selectedDate, selectedTime],
+    [doctorId, selectedDate, selectedTime, session],
   );
 
   return {

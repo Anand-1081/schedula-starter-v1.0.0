@@ -1,9 +1,9 @@
-import { AppShell } from "@/components/layout/app-shell";
+import { PatientShell } from "@/components/layout/patient-shell";
 import { DoctorDirectory } from "@/features/doctors/components/doctor-directory";
 
 export default function DoctorsPage() {
   return (
-    <AppShell>
+    <PatientShell>
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-8 sm:py-10 lg:px-12">
         <p className="text-sm font-medium text-[var(--brand)]">Directory</p>
         <div className="mt-2 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
@@ -18,6 +18,6 @@ export default function DoctorsPage() {
           <DoctorDirectory />
         </div>
       </div>
-    </AppShell>
+    </PatientShell>
   );
 }

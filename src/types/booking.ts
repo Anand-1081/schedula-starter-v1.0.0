@@ -16,9 +16,23 @@ export type BookingRequest = {
   patientName: string;
   patientAge: number;
   reason: string;
+  userId?: string;
 };
 
-export type AppointmentStatus = "pending" | "confirmed" | "cancelled";
+// "pending"    - booked by a user, awaiting the doctor's confirmation
+// "confirmed"  - doctor confirmed; counts as "upcoming" while in the future
+// "cancelled"  - declined by the doctor, or cancelled by the doctor/user
+// "completed"  - the visit happened and the doctor marked it done
+// "missed"     - the visit time passed and the patient didn't show
+export type AppointmentStatus = "pending" | "confirmed" | "cancelled" | "completed" | "missed";
+
+export type RescheduleEntry = {
+  fromDate: string;
+  fromTime: string;
+  toDate: string;
+  toTime: string;
+  at: string;
+};
 
 export type BookingConfirmation = {
   id: string;
@@ -34,4 +48,14 @@ export type BookingConfirmation = {
   reason: string;
   createdAt: string;
   status: AppointmentStatus;
+  userId?: string;
+  cancelledBy?: "doctor" | "user";
+  cancelReason?: string;
+  rescheduleHistory?: RescheduleEntry[];
+  prescriptionAvailable?: boolean;
+  prescriptionNotes?: string;
+  prescriptionIssuedAt?: string;
+  reviewed?: boolean;
+  reviewRating?: number;
+  reviewComment?: string;
 };
