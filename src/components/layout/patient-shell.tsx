@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { usePatientSession } from "@/features/patient/hooks/use-patient-session";
 import { LogOutIcon } from "@/components/ui/icons";
 import { NotificationBell } from "@/features/notifications/components/notification-bell";
+import { ChatbotWidget } from "@/features/chatbot/components/chatbot-widget";
 
 const NAV_LINKS = [
   { href: "/patient/dashboard", label: "Dashboard" },
@@ -85,6 +86,7 @@ export function PatientShell({ children }: { children: React.ReactNode }) {
         </div>
       </header>
       <main className="flex-1">{children}</main>
+      {!minimal && <ChatbotWidget />}
     </div>
   );
 }
