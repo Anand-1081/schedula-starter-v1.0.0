@@ -1,7 +1,7 @@
 "use client";
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { loginPatient } from "@/features/patient/api/patient-client";
-import type { PatientSession } from "@/types/patient-account";
+import type { PatientSession, PublicPatientAccount } from "@/types/patient-account";
 
 const STORAGE_KEY = "schedula.patient-session";
 
@@ -10,6 +10,7 @@ type PatientSessionContextValue = {
   status: "loading" | "signed-out" | "signed-in";
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => void;
+  updatePatient: (patient: PublicPatientAccount) => void;
 };
 
 const PatientSessionContext = createContext<PatientSessionContextValue | null>(null);
@@ -51,8 +52,17 @@ export function PatientSessionProvider({ children }: { children: ReactNode }) {
     setStatus("signed-out");
   }, []);
 
+  const updatePatient = useCallback((patient: PublicPatientAccount) => {
+    setSession((prev) => {
+      if (!prev) return prev;
+      const next = { ...prev, patient };
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
   return (
-    <PatientSessionContext.Provider value={{ session, status, signIn, signOut }}>
+    <PatientSessionContext.Provider value={{ session, status, signIn, signOut, updatePatient }}>
       {children}
     </PatientSessionContext.Provider>
   );

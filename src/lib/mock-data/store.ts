@@ -4,6 +4,9 @@ import type { AvailabilityRule } from "@/types/availability-rule";
 import type { BookingConfirmation } from "@/types/booking";
 import type { AppNotification, NotificationKind, NotificationRecipient } from "@/types/notification";
 import type { PatientAccount, PublicPatientAccount } from "@/types/patient-account";
+import type { Prescription } from "@/types/prescription";
+import type { PatientProfile } from "@/types/patient-profile";
+import type { TestReport } from "@/types/test-report";
 
 /**
  * In-memory mock "database" for the whole app. This starter has no real
@@ -78,6 +81,36 @@ export function toPublicPatientAccount(account: PatientAccount): PublicPatientAc
     phone: account.phone,
   };
 }
+
+// Structured prescriptions, one per completed booking (keyed by bookingId).
+// `BookingConfirmation.prescriptionAvailable` stays as a quick flag for list
+// views; the full diagnosis/medicines/instructions live here.
+export const prescriptions: Prescription[] = [];
+
+export function getPrescriptionByBooking(bookingId: string): Prescription | undefined {
+  return prescriptions.find((item) => item.bookingId === bookingId);
+}
+
+// Extended patient profile info (physical details, medical history,
+// insurance, emergency contact) — separate from the account/credentials
+// record so it can be filled in gradually after registration.
+export const patientProfiles: PatientProfile[] = [];
+
+export function getOrCreatePatientProfile(patientId: string): PatientProfile {
+  let profile = patientProfiles.find((item) => item.patientId === patientId);
+  if (!profile) {
+    profile = { patientId };
+    patientProfiles.push(profile);
+  }
+  return profile;
+}
+
+// Mock test-report records, purely so the patient profile's summary card
+// has something real to count. No upload flow exists yet.
+export const testReports: TestReport[] = [
+  { id: "tr-01", patientId: "pat-01", title: "Complete Blood Count", category: "Pathology", date: "2026-07-12", status: "ready" },
+  { id: "tr-02", patientId: "pat-01", title: "Lipid Profile", category: "Pathology", date: "2026-08-02", status: "ready" },
+];
 
 /**
  * Notifications for both portals. Like `bookings`, this is in-memory only

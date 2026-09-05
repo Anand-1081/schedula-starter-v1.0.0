@@ -32,7 +32,7 @@ export default function LandingPage() {
 
           <div className="mx-auto mt-10 grid max-w-3xl gap-6 sm:grid-cols-2">
             <Link
-              href="/doctors"
+              href="/patient/login"
               className="group flex flex-col justify-between rounded-2xl border border-[var(--line)] bg-white p-7 shadow-sm transition hover:-translate-y-0.5 hover:border-[var(--brand)] hover:shadow-md"
             >
               <div>

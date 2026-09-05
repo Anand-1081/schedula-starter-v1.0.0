@@ -29,3 +29,15 @@ export async function loginPatient(email: string, password: string): Promise<Pat
   });
   return parse<PatientSession>(response);
 }
+
+export async function updatePatientAccount(
+  patientId: string,
+  fields: { name?: string; email?: string; phone?: string },
+): Promise<PublicPatientAccount> {
+  const response = await fetch("/api/patient/account", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ patientId, ...fields }),
+  });
+  return parse<PublicPatientAccount>(response);
+}
