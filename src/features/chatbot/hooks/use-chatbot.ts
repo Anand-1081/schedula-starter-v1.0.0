@@ -13,7 +13,7 @@ const WELCOME: DisplayMessage = {
   id: "welcome",
   role: "bot",
   content:
-    "Hi! I'm Dr. Schedula. Tell me a symptom (headache, fever, stomach ache, cough...) and I'll ask a couple of quick questions before giving you care advice. I can also help with your appointments, prescriptions, or finding a doctor.",
+    "Hi! I'm Dr. Schedula. Tell me what's bothering you - headache, fever, stomach ache, toothache, rash, acidity, and more - and I'll ask a couple of quick questions before giving you care advice. I can also help with your appointments, prescriptions, or finding a doctor.",
   createdAt: new Date().toISOString(),
 };
 

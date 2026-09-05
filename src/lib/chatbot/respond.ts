@@ -32,7 +32,22 @@ type SymptomKey =
   | "bodyAche"
   | "nausea"
   | "diarrhea"
-  | "backPain";
+  | "backPain"
+  | "toothache"
+  | "earPain"
+  | "eyeIrritation"
+  | "skinRash"
+  | "acidity"
+  | "constipation"
+  | "gas"
+  | "dizziness"
+  | "insomnia"
+  | "mouthUlcer"
+  | "minorCutBurn"
+  | "sunburn"
+  | "menstrualCramps"
+  | "motionSickness"
+  | "hiccups";
 
 type SymptomInfo = {
   label: string;
@@ -268,6 +283,332 @@ const SYMPTOM_LIBRARY: Record<SymptomKey, SymptomInfo> = {
       "it lasts more than a week or is getting worse",
     ],
   },
+  toothache: {
+    label: "toothache",
+    care: [
+      "Rinse your mouth with warm salt water.",
+      "Gently floss around the tooth in case something's trapped there.",
+      "Apply a cold compress to the cheek/jaw from outside for 15-20 minutes.",
+      "Avoid chewing on that side until it's looked at.",
+    ],
+    medicine: [
+      "Paracetamol or ibuprofen at the standard adult dose can ease the pain; a dab of clove oil on the tooth is a common home remedy.",
+    ],
+    avoid: [
+      "Very hot, cold, or sugary food and drinks.",
+      "Chewing directly on the painful tooth.",
+    ],
+    seekHelp: [
+      "the pain is severe, or there's swelling in the face/gum",
+      "there's fever or a bad taste/pus near the tooth",
+      "it lasts more than a couple of days",
+      "a tooth is broken, knocked loose, or knocked out",
+    ],
+  },
+  earPain: {
+    label: "ear pain",
+    care: [
+      "Hold a warm compress against the ear for 10-15 minutes at a time.",
+      "Rest with your head slightly elevated rather than lying flat.",
+      "Chewing gum or yawning can relieve pressure-related ear pain (e.g. from flights or colds).",
+      "Keep the ear dry.",
+    ],
+    medicine: [
+      "Paracetamol or ibuprofen at the standard adult dose can ease the pain; use ear drops only if a pharmacist/doctor has confirmed there's no perforated eardrum.",
+    ],
+    avoid: [
+      "Inserting cotton buds or anything into the ear canal.",
+      "Swimming or getting water in the ear until it's better.",
+    ],
+    seekHelp: [
+      "there's fluid, blood, or pus draining from the ear",
+      "the pain is severe, or there's hearing loss or dizziness",
+      "it's a young child pulling at their ear with fever",
+      "it lasts more than 2-3 days",
+    ],
+  },
+  eyeIrritation: {
+    label: "eye irritation",
+    care: [
+      "Rinse the eye gently with clean water or sterile saline.",
+      "A clean, cool damp cloth over closed eyes can soothe irritation.",
+      "Avoid rubbing the eye, even if it itches.",
+      "Give your eyes a break from screens.",
+    ],
+    medicine: [
+      "Preservative-free lubricating (\"artificial tears\") eye drops can help with dryness or mild irritation - ask a pharmacist for one suited to you.",
+    ],
+    avoid: [
+      "Wearing contact lenses until it clears up.",
+      "Sharing towels, pillows, or eye makeup while it's irritated.",
+    ],
+    seekHelp: [
+      "there's significant pain, light sensitivity, or vision changes",
+      "there's thick discharge, or the eyelid is swollen shut",
+      "it follows a chemical splash or an injury",
+      "it doesn't improve in 2-3 days",
+    ],
+  },
+  skinRash: {
+    label: "skin rash",
+    care: [
+      "Keep the area clean and dry.",
+      "Wear loose, breathable cotton clothing over it.",
+      "A cool compress or an oatmeal/lukewarm bath can ease itching.",
+      "Try to identify and avoid whatever may have triggered it (new soap, plant, food, fabric).",
+    ],
+    medicine: [
+      "A gentle, fragrance-free moisturizer or calamine lotion can soothe it; an over-the-counter antihistamine can help with itching - check the label.",
+    ],
+    avoid: [
+      "Scratching the area.",
+      "Hot showers, harsh soaps, or new cosmetic products until it settles.",
+    ],
+    seekHelp: [
+      "it spreads quickly, blisters, or oozes",
+      "it comes with fever, facial/throat swelling, or trouble breathing (seek emergency care immediately)",
+      "it's very painful or covers a large area",
+      "it doesn't improve in a few days",
+    ],
+  },
+  acidity: {
+    label: "acidity/heartburn",
+    care: [
+      "Eat smaller, more frequent meals rather than large ones.",
+      "Stay upright for a couple of hours after eating - avoid lying down right away.",
+      "Sipping cold milk or water can offer quick relief for some people.",
+      "Loosen tight clothing around the waist.",
+    ],
+    medicine: [
+      "An over-the-counter antacid usually gives quick relief; if it's frequent, an OTC acid-reducer can help - check the label for how long it's meant to be used.",
+    ],
+    avoid: [
+      "Spicy, fried, or very oily food, and citrus/tomato-heavy meals.",
+      "Caffeine, alcohol, and carbonated drinks.",
+      "Lying down or exercising right after a meal.",
+    ],
+    seekHelp: [
+      "it happens more than twice a week or keeps you up at night",
+      "there's difficulty/pain swallowing, unexplained weight loss, or vomiting blood",
+      "the pain is severe or spreads to the chest, arm, or jaw (this can mimic a heart problem - seek emergency care)",
+      "over-the-counter antacids stop helping",
+    ],
+  },
+  constipation: {
+    label: "constipation",
+    care: [
+      "Increase fluids - water especially - through the day.",
+      "Add fiber-rich foods: fruits, vegetables, whole grains.",
+      "Gentle movement or a short walk can help get things moving.",
+      "Try not to delay the urge to go.",
+    ],
+    medicine: [
+      "An over-the-counter fiber supplement or a mild laxative can help short-term - check the label for how long it's meant to be used.",
+    ],
+    avoid: [
+      "Processed, low-fiber food.",
+      "Relying on laxatives regularly without checking with a doctor.",
+    ],
+    seekHelp: [
+      "it lasts more than a week, or alternates with diarrhea",
+      "there's blood in the stool, or severe abdominal pain/bloating",
+      "there's unexplained weight loss",
+      "it's a persistent, new pattern for you",
+    ],
+  },
+  gas: {
+    label: "gas/bloating",
+    care: [
+      "Eat slowly and avoid talking a lot while eating (reduces swallowed air).",
+      "A short walk after meals can help move gas along.",
+      "Warm herbal teas (peppermint, ginger, fennel) are commonly used to ease bloating.",
+      "Note any foods that seem to trigger it (beans, dairy, carbonated drinks, artificial sweeteners).",
+    ],
+    medicine: [
+      "An over-the-counter anti-gas tablet (e.g. simethicone-based) can bring quick relief - check the label.",
+    ],
+    avoid: [
+      "Carbonated drinks, chewing gum, and drinking through a straw.",
+      "Large, hurried meals.",
+    ],
+    seekHelp: [
+      "it comes with severe pain, fever, or vomiting",
+      "there's blood in the stool or unexplained weight loss",
+      "it's persistent and doesn't improve with diet changes",
+    ],
+  },
+  dizziness: {
+    label: "dizziness",
+    care: [
+      "Sit or lie down right away until it passes - don't try to push through it.",
+      "Get up slowly from sitting or lying, especially after resting.",
+      "Sip water - mild dehydration is a common cause.",
+      "Avoid driving or operating machinery while dizzy.",
+    ],
+    medicine: [
+      "If it's mild and related to travel/motion, an over-the-counter motion-sickness tablet can help - otherwise it's best not to self-medicate dizziness without knowing the cause.",
+    ],
+    avoid: [
+      "Sudden head movements or standing up quickly.",
+      "Alcohol and skipping meals.",
+    ],
+    seekHelp: [
+      "it comes with chest pain, slurred speech, weakness, or a severe headache (seek emergency care immediately)",
+      "you actually faint, or it happens repeatedly",
+      "it comes with hearing loss, ringing in the ears, or double vision",
+      "it lasts more than a day or keeps recurring",
+    ],
+  },
+  insomnia: {
+    label: "trouble sleeping",
+    care: [
+      "Keep a consistent sleep and wake time, even on weekends.",
+      "Wind down with a calm routine - dim lights, no screens for the last 30-60 minutes.",
+      "Keep the bedroom cool, dark, and quiet.",
+      "If you can't sleep after ~20 minutes, get up and do something calm rather than lying there frustrated.",
+    ],
+    medicine: [
+      "A warm, non-caffeinated drink (like warm milk or chamomile tea) is a gentle first step; ask a pharmacist before trying any over-the-counter sleep aid, especially if it's frequent.",
+    ],
+    avoid: [
+      "Caffeine and heavy meals in the evening.",
+      "Long daytime naps, and screens right before bed.",
+      "Alcohol as a sleep aid - it disrupts sleep quality.",
+    ],
+    seekHelp: [
+      "it lasts more than a few weeks",
+      "it's affecting your daytime functioning significantly",
+      "it comes with loud snoring and gasping for air (possible sleep apnea)",
+      "you're relying on medication to fall asleep most nights",
+    ],
+  },
+  mouthUlcer: {
+    label: "mouth ulcer",
+    care: [
+      "Rinse gently with warm salt water a few times a day.",
+      "Avoid irritating the area with your tongue or teeth.",
+      "Use a soft-bristled toothbrush.",
+    ],
+    medicine: [
+      "An over-the-counter oral gel for mouth ulcers can numb the area and speed healing - check the label.",
+    ],
+    avoid: [
+      "Spicy, acidic, salty, or crunchy food that can irritate it.",
+      "Very hot drinks.",
+    ],
+    seekHelp: [
+      "it lasts more than 2 weeks",
+      "you get them very frequently",
+      "it's unusually large, or comes with high fever",
+      "it's hard to eat or drink because of it",
+    ],
+  },
+  minorCutBurn: {
+    label: "minor cut or burn",
+    care: [
+      "For a cut: clean it gently with running water, apply pressure with a clean cloth to stop any bleeding, then cover with a clean bandage.",
+      "For a burn: hold it under cool (not ice-cold) running water for about 10-20 minutes, then cover loosely with a clean, non-stick dressing.",
+      "Keep the area clean and change the dressing regularly.",
+    ],
+    medicine: [
+      "An antiseptic cream/ointment on a clean cut can help prevent infection; paracetamol or ibuprofen can ease pain if needed.",
+    ],
+    avoid: [
+      "Applying butter, oil, ice, or toothpaste to a burn.",
+      "Popping blisters.",
+      "Leaving a wound uncovered in dirty environments.",
+    ],
+    seekHelp: [
+      "the bleeding doesn't stop with pressure, or the cut is deep/gaping",
+      "the burn is larger than your palm, or on the face, hands, or genitals",
+      "there are signs of infection - increasing redness, warmth, pus, or fever",
+      "it was caused by a rusty object and your tetanus shot isn't up to date",
+    ],
+  },
+  sunburn: {
+    label: "sunburn",
+    care: [
+      "Get out of the sun and cool the skin with a cool (not ice-cold) shower or damp cloth.",
+      "Apply a gentle moisturizer or aloe vera gel to soothe it.",
+      "Drink extra water - sunburn draws fluid to the skin's surface.",
+      "Leave any blisters alone and don't pick at peeling skin.",
+    ],
+    medicine: [
+      "Paracetamol or ibuprofen at the standard adult dose can ease pain and swelling.",
+    ],
+    avoid: [
+      "Further sun exposure until it heals.",
+      "Petroleum- or oil-based products, and very hot showers.",
+      "Tight clothing over the burned area.",
+    ],
+    seekHelp: [
+      "there's widespread blistering, severe pain, fever, or chills",
+      "there are signs of dehydration or heat exhaustion (dizziness, nausea, confusion)",
+      "it covers a large area of the body",
+      "it doesn't start improving in a few days",
+    ],
+  },
+  menstrualCramps: {
+    label: "menstrual cramps",
+    care: [
+      "A warm compress or hot water bag on the lower abdomen or back often helps a lot.",
+      "Gentle movement or light stretching can ease cramping for some people.",
+      "Rest when you need to, and stay hydrated.",
+    ],
+    medicine: [
+      "Ibuprofen or another NSAID (taken with food) at the standard adult dose is usually more effective than paracetamol for period pain, if you tolerate it.",
+    ],
+    avoid: [
+      "Caffeine, alcohol, and salty food, which can worsen bloating and cramping for some people.",
+    ],
+    seekHelp: [
+      "the pain is severe enough to disrupt daily life every cycle",
+      "there's unusually heavy bleeding (soaking a pad/tampon every hour)",
+      "the pain is new, worsening, or doesn't respond to usual pain relief",
+      "it comes with fever or pain outside your period",
+    ],
+  },
+  motionSickness: {
+    label: "motion sickness",
+    care: [
+      "Look at a fixed point on the horizon rather than reading or using a screen.",
+      "Sit where motion is felt the least - front seat of a car, over the wings on a plane, on deck of a boat.",
+      "Get fresh air if possible, and avoid heavy or greasy meals before travel.",
+      "Ginger (tea, candy) is a well-known natural remedy.",
+    ],
+    medicine: [
+      "An over-the-counter motion-sickness tablet, taken before travel as directed on the label, works well for most people.",
+    ],
+    avoid: [
+      "Reading, phone screens, or facing backward during travel.",
+      "Strong odors and alcohol before/during travel.",
+    ],
+    seekHelp: [
+      "vomiting is severe or you can't keep fluids down",
+      "it's paired with severe headache, vision changes, or confusion",
+      "it happens even without travel/motion",
+    ],
+  },
+  hiccups: {
+    label: "hiccups",
+    care: [
+      "Hold your breath gently for a few seconds, or breathe into a paper bag.",
+      "Sip cold water slowly.",
+      "Swallow a small spoon of sugar or honey (a well-known home trick).",
+      "Try gently pulling your knees to your chest while sitting.",
+    ],
+    medicine: [
+      "Hiccups almost always resolve on their own without any medicine.",
+    ],
+    avoid: [
+      "Eating or drinking too fast, carbonated drinks, and alcohol, if hiccups happen often.",
+    ],
+    seekHelp: [
+      "they last more than 48 hours",
+      "they're severe enough to disrupt eating, sleeping, or breathing",
+      "they come with chest pain, difficulty swallowing, or vomiting",
+    ],
+  },
 };
 
 const SYMPTOM_PATTERNS: Array<{ key: SymptomKey; pattern: RegExp }> = [
@@ -281,6 +622,21 @@ const SYMPTOM_PATTERNS: Array<{ key: SymptomKey; pattern: RegExp }> = [
   { key: "nausea", pattern: /(nausea|nauseous|feel like vomiting|throwing up|vomit)/ },
   { key: "diarrhea", pattern: /(diarrhea|diarrhoea|loose motion|loose stool)/ },
   { key: "backPain", pattern: /(back\s*pain|back\s*ache)/ },
+  { key: "toothache", pattern: /(tooth\s*ache|tooth\s*pain|teeth\s*pain|dental pain)/ },
+  { key: "earPain", pattern: /(ear\s*ache|ear\s*pain|pain in (my|the) ear)/ },
+  { key: "eyeIrritation", pattern: /(eye\s*(irritation|pain|redness|itch)|red eyes?|itchy eyes?|watery eyes?)/ },
+  { key: "skinRash", pattern: /(rash|skin\s*allerg|itchy skin|hives)/ },
+  { key: "acidity", pattern: /(acidity|heartburn|acid reflux)/ },
+  { key: "constipation", pattern: /\bconstipat/ },
+  { key: "gas", pattern: /\b(gas|bloating|bloated|flatulence)\b/ },
+  { key: "dizziness", pattern: /(dizz|light\s*headed|vertigo)/ },
+  { key: "insomnia", pattern: /(insomnia|can'?t sleep|trouble sleeping|sleepless)/ },
+  { key: "mouthUlcer", pattern: /(mouth ulcer|canker sore)/ },
+  { key: "minorCutBurn", pattern: /\b(cut|wound|burn(ed|t)?)\b/ },
+  { key: "sunburn", pattern: /sunburn/ },
+  { key: "menstrualCramps", pattern: /(period pain|menstrual cramp|period cramp)/ },
+  { key: "motionSickness", pattern: /(motion sick|car sick|travel sick|sea sick)/ },
+  { key: "hiccups", pattern: /hiccup/ },
 ];
 
 function detectSymptom(message: string): SymptomKey | null {
@@ -408,7 +764,7 @@ function describeBooking(booking: BookingConfirmation): string {
 }
 
 function greeting(name: string): string {
-  return `Hi ${name.split(" ")[0]}! I'm Dr. Schedula, your health assistant. Tell me your symptoms (headache, fever, stomach ache, cough...) and I'll walk you through some care advice, or ask me about your appointments, prescriptions, or finding a doctor.`;
+  return `Hi ${name.split(" ")[0]}! I'm Dr. Schedula, your health assistant. Tell me what's bothering you - headache, fever, stomach ache, toothache, rash, acidity, and more - and I'll walk you through some care advice, or ask me about your appointments, prescriptions, or finding a doctor.`;
 }
 
 export function getChatbotReply(patientId: string, rawMessage: string): string {
@@ -479,5 +835,5 @@ export function getChatbotReply(patientId: string, rawMessage: string): string {
     return "You can update your medical details, insurance, and emergency contact from the \"Profile\" page in the menu.";
   }
 
-  return "I can help with symptoms (like headache, fever, or stomach ache), appointments, prescriptions, doctors, or your profile - could you tell me a bit more about what you need?";
+  return "I can help with symptoms (headache, fever, stomach ache, toothache, rash, acidity, and more), appointments, prescriptions, doctors, or your profile - could you tell me a bit more about what you need?";
 }
