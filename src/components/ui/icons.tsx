@@ -125,3 +125,40 @@ export function StarIcon(props: SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
+export function StethoscopeIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M6 3v3.25a2.25 2.25 0 0 0 4.5 0V3" />
+      <path d="M8.25 8.5v2.75a4 4 0 0 0 8 0V9.5" />
+      <circle cx="16.25" cy="8" r="1.35" />
+      <circle cx="4.25" cy="16.25" r="2" />
+      <path d="M4.25 14.25v-3.5" />
+    </svg>
+  );
+}
+
+export function ChatIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M3.5 10c0-3.59 2.91-6.5 6.5-6.5s6.5 2.91 6.5 6.5-2.91 6.5-6.5 6.5c-.86 0-1.68-.17-2.43-.47L4.5 17l.83-3.02A6.47 6.47 0 0 1 3.5 10Z" />
+      <path d="M7 9.75h6M7 12.25h4" />
+    </svg>
+  );
+}
+
+export function SendIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} fill="currentColor" stroke="none" {...props}>
+      <path d="M3.4 3.6a.75.75 0 0 1 .82-.16l12.5 5.4a.75.75 0 0 1 0 1.38l-12.5 5.4a.75.75 0 0 1-1.03-.87l1.5-4.86a.5.5 0 0 1 .38-.34L10.5 10l-4.93-.55a.5.5 0 0 1-.38-.34l-1.5-4.86a.75.75 0 0 1 .21-.65Z" />
+    </svg>
+  );
+}
+
+export function CloseIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M5.5 5.5l9 9M14.5 5.5l-9 9" />
+    </svg>
+  );
+}
