@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { AppShell } from "@/components/layout/app-shell";
 import { LoginForm } from "@/features/auth/components/login-form";
 
@@ -21,6 +22,12 @@ export default function LoginPage() {
             SCHEDULA CLINIC OPS &middot; ID CARD 04
           </p>
         </div>
+        <p className="mt-6 text-center text-sm text-[var(--muted)]">
+          Are you a doctor?{" "}
+          <Link href="/doctor/login" className="font-semibold text-[var(--brand)] hover:text-[var(--brand-deep)]">
+            Go to the doctor portal
+          </Link>
+        </p>
       </div>
     </AppShell>
   );

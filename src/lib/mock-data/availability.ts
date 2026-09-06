@@ -1,43 +1,46 @@
+import { availabilityRules, bookings } from "@/lib/mock-data/store";
 import type { DayAvailability, Slot } from "@/types/booking";
+import type { Weekday } from "@/types/availability-rule";
 
-const CLINIC_HOURS = { startHour: 9, endHour: 17, stepMinutes: 30 };
-
-// Small deterministic hash so the same doctor + date always produces the
-// same "already booked" pattern, without persisting state anywhere.
-function hash(input: string): number {
-  let value = 0;
-  for (let index = 0; index < input.length; index += 1) {
-    value = (value * 31 + input.charCodeAt(index)) >>> 0;
-  }
-  return value;
+function timeToMinutes(time: string): number {
+  const [hour, minute] = time.split(":").map(Number);
+  return hour * 60 + minute;
 }
 
-function pad(value: number): string {
-  return value.toString().padStart(2, "0");
+function minutesToTime(total: number): string {
+  const hour = Math.floor(total / 60)
+    .toString()
+    .padStart(2, "0");
+  const minute = (total % 60).toString().padStart(2, "0");
+  return `${hour}:${minute}`;
 }
 
+// Slots come from whichever recurring rules the doctor has configured for
+// this weekday, minus any time already booked. This is what makes slots a
+// doctor creates on the Profile page show up immediately on the user portal.
 export function getAvailability(doctorId: string, date: string): DayAvailability {
-  const slots: Slot[] = [];
-  const seed = hash(`${doctorId}:${date}`);
-  const isWeekend = [0, 6].includes(new Date(`${date}T00:00:00`).getDay());
+  const weekday = new Date(`${date}T00:00:00`).getDay() as Weekday;
 
-  let index = 0;
-  for (let minutesFromStart = 0; ; minutesFromStart += CLINIC_HOURS.stepMinutes) {
-    const totalMinutes = CLINIC_HOURS.startHour * 60 + minutesFromStart;
-    const hour = Math.floor(totalMinutes / 60);
-    if (hour >= CLINIC_HOURS.endHour) break;
-    const minute = totalMinutes % 60;
+  const matchingRules = availabilityRules.filter(
+    (rule) => rule.doctorId === doctorId && rule.weekdays.includes(weekday),
+  );
 
-    // Lunch break, held open on no calendar.
-    const isLunch = hour === 13;
-    const bookedByPattern = (seed >> (index % 24)) % 3 === 0;
-
-    slots.push({
-      time: `${pad(hour)}:${pad(minute)}`,
-      available: !isLunch && !isWeekend && !bookedByPattern,
-    });
-    index += 1;
+  const times = new Set<string>();
+  for (const rule of matchingRules) {
+    const start = timeToMinutes(rule.startTime);
+    const end = timeToMinutes(rule.endTime);
+    for (let minute = start; minute + rule.slotMinutes <= end; minute += rule.slotMinutes) {
+      times.add(minutesToTime(minute));
+    }
   }
+
+  const bookedTimes = new Set(
+    bookings.filter((booking) => booking.doctorId === doctorId && booking.date === date).map((booking) => booking.time),
+  );
+
+  const slots: Slot[] = Array.from(times)
+    .sort()
+    .map((time) => ({ time, available: !bookedTimes.has(time) }));
 
   return { doctorId, date, slots };
 }

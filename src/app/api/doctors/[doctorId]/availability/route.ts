@@ -1,11 +1,11 @@
-import { doctors } from "@/lib/mock-data/doctors";
+import { doctorAccounts } from "@/lib/mock-data/store";
 import { getAvailability } from "@/lib/mock-data/availability";
 
 type RouteContext = { params: Promise<{ doctorId: string }> };
 
 export async function GET(request: Request, { params }: RouteContext) {
   const { doctorId } = await params;
-  const doctor = doctors.find((item) => item.id === doctorId);
+  const doctor = doctorAccounts.find((item) => item.id === doctorId);
   if (!doctor) {
     return Response.json({ error: "Doctor not found" }, { status: 404 });
   }
