@@ -59,9 +59,9 @@ export function ConfirmationTicket({ confirmation }: { confirmation: BookingConf
       </div>
 
       <div className="mt-6 flex flex-col gap-2.5 sm:flex-row">
-        <Link href="/" className="flex-1">
+        <Link href="/patient/dashboard" className="flex-1">
           <Button variant="primary" className="w-full">
-            Back to dashboard
+            Go to dashboard
           </Button>
         </Link>
         <Link href="/doctors" className="flex-1">

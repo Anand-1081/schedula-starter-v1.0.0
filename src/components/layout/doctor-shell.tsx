@@ -3,11 +3,13 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useDoctorSession } from "@/features/doctor-portal/hooks/use-doctor-session";
 import { LogOutIcon } from "@/components/ui/icons";
+import { NotificationBell } from "@/features/notifications/components/notification-bell";
 
 const NAV_LINKS = [
   { href: "/doctor/dashboard", label: "Dashboard" },
-  { href: "/doctor/profile", label: "Profile" },
+  { href: "/doctor/calendar", label: "Calendar" },
   { href: "/doctor/appointments", label: "Appointments" },
+  { href: "/doctor/profile", label: "Profile" },
 ];
 
 export function DoctorShell({ children }: { children: React.ReactNode }) {
@@ -56,8 +58,18 @@ export function DoctorShell({ children }: { children: React.ReactNode }) {
             </nav>
           )}
 
+          {minimal && (
+            <Link
+              href="/patient/login"
+              className="rounded-lg border border-[var(--line)] px-3.5 py-2 text-sm font-semibold hover:border-[var(--brand)] hover:text-[var(--brand)]"
+            >
+              Patient portal
+            </Link>
+          )}
+
           {!minimal && status !== "loading" && session && (
             <div className="flex items-center gap-3">
+              <NotificationBell recipientType="doctor" recipientId={session.doctor.id} />
               <span className="grid size-8 place-items-center rounded-full bg-emerald-100 text-xs font-semibold text-[var(--brand-deep)]">
                 {session.doctor.initials}
               </span>

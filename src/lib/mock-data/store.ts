@@ -2,6 +2,8 @@ import { doctors as seedDoctors } from "@/lib/mock-data/doctors";
 import type { DoctorAccount, PublicDoctorAccount } from "@/types/doctor-account";
 import type { AvailabilityRule } from "@/types/availability-rule";
 import type { BookingConfirmation } from "@/types/booking";
+import type { AppNotification, NotificationKind, NotificationRecipient } from "@/types/notification";
+import type { PatientAccount, PublicPatientAccount } from "@/types/patient-account";
 
 /**
  * In-memory mock "database" for the whole app. This starter has no real
@@ -52,6 +54,57 @@ export const availabilityRules: AvailabilityRule[] = seedDoctors.flatMap((doctor
 ]);
 
 export const bookings: BookingConfirmation[] = [];
+
+// Patients are a separate account type from clinic staff (`users.ts`) and
+// doctors (`doctorAccounts` above) — they self-register through the patient
+// portal. One demo account is seeded so the flow can be tried immediately.
+export const patientAccounts: PatientAccount[] = [
+  {
+    id: "pat-01",
+    name: "Asha Kapoor",
+    initials: "AK",
+    email: "asha@example.com",
+    phone: "9812345678",
+    password: "patient123",
+  },
+];
+
+export function toPublicPatientAccount(account: PatientAccount): PublicPatientAccount {
+  return {
+    id: account.id,
+    name: account.name,
+    initials: account.initials,
+    email: account.email,
+    phone: account.phone,
+  };
+}
+
+/**
+ * Notifications for both portals. Like `bookings`, this is in-memory only
+ * and resets on server restart. Every appointment-lifecycle mutation
+ * (booking, confirming, declining, cancelling, rescheduling, completing,
+ * marking missed, adding a prescription) should call `addNotification` so
+ * the recipient's bell stays in sync with the appointment state.
+ */
+export const notifications: AppNotification[] = [];
+
+export function addNotification(input: {
+  recipientType: NotificationRecipient;
+  recipientId: string;
+  bookingId?: string;
+  kind: NotificationKind;
+  title: string;
+  message: string;
+}): AppNotification {
+  const notification: AppNotification = {
+    id: `ntf-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    createdAt: new Date().toISOString(),
+    read: false,
+    ...input,
+  };
+  notifications.push(notification);
+  return notification;
+}
 
 export function toPublicDoctorAccount(account: DoctorAccount): PublicDoctorAccount {
   return {

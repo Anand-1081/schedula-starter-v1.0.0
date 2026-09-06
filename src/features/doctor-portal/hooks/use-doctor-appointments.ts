@@ -1,7 +1,11 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { getDoctorAppointments, updateAppointmentStatus } from "@/features/doctor-portal/api/doctor-portal-client";
-import type { AppointmentStatus, BookingConfirmation } from "@/types/booking";
+import {
+  getDoctorAppointments,
+  updateAppointment,
+  type AppointmentActionPayload,
+} from "@/features/doctor-portal/api/doctor-portal-client";
+import type { BookingConfirmation } from "@/types/booking";
 
 type Status = "loading" | "ready" | "error";
 
@@ -28,19 +32,21 @@ export function useDoctorAppointments(doctorId: string | undefined) {
     reload();
   }, [reload]);
 
-  const setStatusFor = useCallback(
-    async (bookingId: string, next: AppointmentStatus) => {
+  const runAction = useCallback(
+    async (bookingId: string, payload: AppointmentActionPayload) => {
       if (!doctorId) return;
       setMutationError(undefined);
       try {
-        const updated = await updateAppointmentStatus(doctorId, bookingId, next);
+        const updated = await updateAppointment(doctorId, bookingId, payload);
         setAppointments((prev) => prev.map((item) => (item.id === updated.id ? updated : item)));
+        return updated;
       } catch (error) {
         setMutationError(error instanceof Error ? error.message : "Unable to update this appointment.");
+        throw error;
       }
     },
     [doctorId],
   );
 
-  return { appointments, status, reload, setStatusFor, mutationError };
+  return { appointments, status, reload, runAction, mutationError };
 }

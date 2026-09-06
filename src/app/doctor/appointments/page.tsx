@@ -9,7 +9,7 @@ import { AppointmentList } from "@/features/doctor-portal/components/appointment
 export default function DoctorAppointmentsPage() {
   const router = useRouter();
   const { session, status: sessionStatus } = useDoctorSession();
-  const { appointments, status, setStatusFor, mutationError } = useDoctorAppointments(session?.doctor.id);
+  const { appointments, status, runAction, mutationError } = useDoctorAppointments(session?.doctor.id);
 
   useEffect(() => {
     if (sessionStatus === "signed-out") router.replace("/doctor/login");
@@ -36,9 +36,9 @@ export default function DoctorAppointmentsPage() {
           <AppointmentList
             appointments={appointments}
             status={status}
-            onConfirm={(id) => setStatusFor(id, "confirmed")}
-            onCancel={(id) => setStatusFor(id, "cancelled")}
+            onAction={runAction}
             showFilter
+            showSearch
             emptyMessage="No appointments yet."
             mutationError={mutationError}
           />

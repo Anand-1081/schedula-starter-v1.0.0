@@ -1,24 +1,87 @@
-﻿"use client";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import type { Appointment, AppointmentStatus } from "@/types/appointment";
-import { AppShell } from "@/components/layout/app-shell";
-import { useSession } from "@/features/auth/hooks/use-session";
-type Filter = "all" | AppointmentStatus;
-type ApiResponse = { data: Appointment[] };
-const styles: Record<AppointmentStatus, string> = { confirmed: "bg-emerald-50 text-emerald-800 ring-emerald-200", pending: "bg-amber-50 text-amber-800 ring-amber-200", cancelled: "bg-stone-100 text-stone-600 ring-stone-200" };
-const time = (value: string) => new Intl.DateTimeFormat("en", { hour: "numeric", minute: "2-digit" }).format(new Date(value));
-export default function Home() {
-  const router = useRouter();
-  const { status: sessionStatus } = useSession();
-  const [items, setItems] = useState<Appointment[]>([]); const [filter, setFilter] = useState<Filter>("all"); const [selectedId, setSelectedId] = useState<string>(); const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
-  useEffect(() => { if (sessionStatus === "signed-out") router.replace("/login"); }, [sessionStatus, router]);
-  useEffect(() => { fetch("/api/appointments").then((response) => response.ok ? response.json() as Promise<ApiResponse> : Promise.reject()).then(({ data }) => { setItems(data); setSelectedId(data[0]?.id); setStatus("ready"); }).catch(() => setStatus("error")); }, []);
-  const visible = useMemo(() => filter === "all" ? items : items.filter((item) => item.status === filter), [items, filter]);
-  const selected = items.find((item) => item.id === selectedId); const counts = items.reduce<Record<Filter, number>>((total, item) => ({ ...total, all: total.all + 1, [item.status]: total[item.status] + 1 }), { all: 0, confirmed: 0, pending: 0, cancelled: 0 });
-  if (sessionStatus !== "signed-in") {
-    return <AppShell><div className="mx-auto max-w-7xl px-4 py-10 sm:px-8"><div className="h-40 animate-pulse rounded-xl bg-stone-100" aria-busy="true" aria-label="Checking session" /></div></AppShell>;
-  }
-  return <AppShell><main className="px-4 py-5 sm:px-8 sm:py-8 lg:px-12"><div className="mx-auto max-w-7xl"><section className="py-3" aria-labelledby="dashboard-title"><div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end"><div><p className="text-sm font-medium text-[var(--brand)]">Friday, 28 August</p><h1 id="dashboard-title" className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Today&apos;s appointments</h1><p className="mt-2 max-w-xl text-[var(--muted)]">Keep the day moving with a clear view of every patient and visit status.</p></div><div className="flex items-center gap-4"><p className="text-sm text-[var(--muted)]"><span className="font-semibold text-[var(--ink)]">{counts.confirmed} confirmed</span> of {counts.all} visits</p><Link href="/doctors" className="rounded-lg bg-[var(--brand)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--brand-deep)]">New appointment</Link></div></div></section><div className="grid grid-cols-2 gap-3 pb-6 sm:grid-cols-4"><div className="rounded-xl border border-[var(--line)] bg-white p-4"><p className="text-xs font-medium uppercase tracking-wide text-[var(--muted)]">Total</p><p className="mt-1 text-2xl font-semibold">{counts.all}</p></div><div className="rounded-xl border border-[var(--line)] bg-white p-4"><p className="text-xs font-medium uppercase tracking-wide text-amber-700">Pending</p><p className="mt-1 text-2xl font-semibold text-amber-800">{counts.pending}</p></div><div className="rounded-xl border border-[var(--line)] bg-white p-4"><p className="text-xs font-medium uppercase tracking-wide text-emerald-700">Confirmed</p><p className="mt-1 text-2xl font-semibold text-emerald-800">{counts.confirmed}</p></div><div className="rounded-xl border border-[var(--line)] bg-white p-4"><p className="text-xs font-medium uppercase tracking-wide text-stone-600">Cancelled</p><p className="mt-1 text-2xl font-semibold text-stone-700">{counts.cancelled}</p></div></div><div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]"><section className="overflow-hidden rounded-xl border border-[var(--line)] bg-white" aria-labelledby="schedule-title"><div className="flex flex-col gap-4 border-b border-[var(--line)] px-5 py-4 sm:flex-row sm:items-center sm:justify-between"><h2 id="schedule-title" className="font-semibold">Schedule</h2><div className="flex gap-1 rounded-lg bg-stone-100 p-1" role="group" aria-label="Filter appointments">{(["all", "confirmed", "pending", "cancelled"] as Filter[]).map((item) => <button key={item} type="button" onClick={() => setFilter(item)} className={`rounded-md px-3 py-1.5 text-sm capitalize ${filter === item ? "bg-white font-medium shadow-sm" : "text-[var(--muted)] hover:text-[var(--ink)]"}`}>{item} <span className="ml-1 text-xs">{counts[item]}</span></button>)}</div></div>{status === "loading" && <div className="space-y-4 p-5" aria-busy="true" aria-label="Loading appointments">{[1, 2, 3].map((item) => <div className="h-20 animate-pulse rounded-lg bg-stone-100" key={item} />)}</div>}{status === "error" && <div className="p-8 text-center" role="alert"><p className="font-medium">We couldn&apos;t load appointments.</p><button className="mt-3 text-sm font-semibold text-[var(--brand)] underline" onClick={() => window.location.reload()} type="button">Try again</button></div>}{status === "ready" && <ul className="divide-y divide-[var(--line)]" role="list">{visible.map((item) => <li key={item.id}><button type="button" onClick={() => setSelectedId(item.id)} aria-pressed={selectedId === item.id} className={`grid w-full grid-cols-[4.5rem_minmax(0,1fr)] gap-3 px-5 py-4 text-left hover:bg-emerald-50/40 ${selectedId === item.id ? "bg-emerald-50/60" : ""}`}><time className="pt-1 text-sm font-medium text-[var(--muted)]">{time(item.startsAt)}</time><div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"><div><p className="font-semibold">{item.patient.name} <span className="font-normal text-[var(--muted)]">· {item.durationMinutes} min</span></p><p className="mt-0.5 truncate text-sm text-[var(--muted)]">{item.reason} · {item.clinician}</p></div><span className={`w-fit rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset ${styles[item.status]}`}>{item.status}</span></div></button></li>)}</ul>}{status === "ready" && visible.length === 0 && <div className="p-10 text-center"><p className="font-medium">No appointments match this filter.</p><button type="button" onClick={() => setFilter("all")} className="mt-2 text-sm font-semibold text-[var(--brand)]">Show all appointments</button></div>}</section><aside className="rounded-xl border border-[var(--line)] bg-white p-5" aria-live="polite"><p className="text-sm font-medium text-[var(--muted)]">Appointment details</p>{selected ? <div className="mt-5"><div className="flex items-center gap-3"><span className="grid size-11 place-items-center rounded-full bg-emerald-100 text-sm font-semibold text-[var(--brand-deep)]">{selected.patient.initials}</span><div><h2 className="font-semibold">{selected.patient.name}</h2><p className="text-sm text-[var(--muted)]">{selected.patient.age} years old</p></div></div><dl className="mt-6 space-y-4 text-sm"><div><dt className="text-[var(--muted)]">Visit</dt><dd className="mt-1 font-medium">{selected.reason}</dd></div><div><dt className="text-[var(--muted)]">Time & room</dt><dd className="mt-1 font-medium">{time(selected.startsAt)} · {selected.room}</dd></div><div><dt className="text-[var(--muted)]">Care team</dt><dd className="mt-1 font-medium">{selected.clinician}<br />{selected.specialty}</dd></div></dl><button type="button" className="mt-7 w-full rounded-lg border border-[var(--line)] px-4 py-2.5 text-sm font-semibold hover:border-[var(--brand)] hover:text-[var(--brand)]">Open patient record</button></div> : <p className="mt-5 text-sm text-[var(--muted)]">Select an appointment to see visit details.</p>}</aside></div></div></main></AppShell>;
+import { UserIcon, CalendarIcon, ChevronRightIcon } from "@/components/ui/icons";
+
+export default function LandingPage() {
+  return (
+    <div className="flex min-h-full flex-col bg-[var(--paper)]">
+      <header className="border-b border-[var(--line)]">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-8">
+          <div className="flex items-center gap-3">
+            <span className="grid size-9 place-items-center rounded-xl bg-[var(--brand)] font-serif text-lg text-white">
+              S
+            </span>
+            <span className="font-serif text-lg font-medium tracking-tight">Schedula</span>
+          </div>
+          <Link href="/staff" className="text-sm font-medium text-[var(--muted)] hover:text-[var(--ink)]">
+            Clinic staff sign in
+          </Link>
+        </div>
+      </header>
+
+      <main className="flex flex-1 items-center">
+        <div className="mx-auto w-full max-w-5xl px-4 py-14 sm:px-8">
+          <div className="text-center">
+            <p className="text-sm font-medium text-[var(--brand)]">Welcome to Schedula</p>
+            <h1 className="mt-3 font-serif text-4xl font-medium tracking-tight sm:text-5xl">
+              Who&apos;s signing in today?
+            </h1>
+            <p className="mx-auto mt-3 max-w-xl text-[var(--muted)]">
+              Choose your portal to book, manage, or track appointments.
+            </p>
+          </div>
+
+          <div className="mx-auto mt-10 grid max-w-3xl gap-6 sm:grid-cols-2">
+            <Link
+              href="/doctors"
+              className="group flex flex-col justify-between rounded-2xl border border-[var(--line)] bg-white p-7 shadow-sm transition hover:-translate-y-0.5 hover:border-[var(--brand)] hover:shadow-md"
+            >
+              <div>
+                <span className="grid size-12 place-items-center rounded-xl bg-emerald-100 text-[var(--brand-deep)]">
+                  <UserIcon className="size-6" aria-hidden="true" />
+                </span>
+                <h2 className="mt-5 font-serif text-2xl font-medium">Patient portal</h2>
+                <p className="mt-2 text-sm text-[var(--muted)]">
+                  Find a doctor, book an appointment, and keep track of your prescriptions and visits.
+                </p>
+              </div>
+              <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--brand)] group-hover:text-[var(--brand-deep)]">
+                Continue as a patient
+                <ChevronRightIcon className="size-4" aria-hidden="true" />
+              </span>
+            </Link>
+
+            <Link
+              href="/doctor/login"
+              className="group flex flex-col justify-between rounded-2xl border border-[var(--line)] bg-white p-7 shadow-sm transition hover:-translate-y-0.5 hover:border-[var(--brand)] hover:shadow-md"
+            >
+              <div>
+                <span className="grid size-12 place-items-center rounded-xl bg-sky-100 text-sky-700">
+                  <CalendarIcon className="size-6" aria-hidden="true" />
+                </span>
+                <h2 className="mt-5 font-serif text-2xl font-medium">Doctor portal</h2>
+                <p className="mt-2 text-sm text-[var(--muted)]">
+                  Manage your schedule, confirm or reschedule appointments, and add prescriptions.
+                </p>
+              </div>
+              <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--brand)] group-hover:text-[var(--brand-deep)]">
+                Continue as a doctor
+                <ChevronRightIcon className="size-4" aria-hidden="true" />
+              </span>
+            </Link>
+          </div>
+
+          <p className="mt-10 text-center text-sm text-[var(--muted)]">
+            New patient?{" "}
+            <Link href="/patient/register" className="font-semibold text-[var(--brand)] hover:text-[var(--brand-deep)]">
+              Create an account
+            </Link>{" "}
+            &middot; New doctor?{" "}
+            <Link href="/doctor/register" className="font-semibold text-[var(--brand)] hover:text-[var(--brand-deep)]">
+              Register your practice
+            </Link>
+          </p>
+        </div>
+      </main>
+    </div>
+  );
 }

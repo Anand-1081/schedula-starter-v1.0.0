@@ -1,6 +1,6 @@
 import type { DoctorSession, PublicDoctorAccount } from "@/types/doctor-account";
 import type { AvailabilityRule, Weekday } from "@/types/availability-rule";
-import type { AppointmentStatus, BookingConfirmation } from "@/types/booking";
+import type { BookingConfirmation } from "@/types/booking";
 import type { RegistrationFormValues, ProfileFormValues } from "@/features/doctor-portal/types";
 
 async function parse<T>(response: Response): Promise<T> {
@@ -44,15 +44,24 @@ export async function getDoctorAppointments(doctorId: string): Promise<BookingCo
   return parse<BookingConfirmation[]>(response);
 }
 
-export async function updateAppointmentStatus(
+export type AppointmentActionPayload =
+  | { action: "confirm" }
+  | { action: "decline"; reason?: string }
+  | { action: "cancel"; reason?: string }
+  | { action: "reschedule"; date: string; time: string }
+  | { action: "complete"; prescriptionAvailable?: boolean; prescriptionNotes?: string }
+  | { action: "missed" }
+  | { action: "prescription"; prescriptionAvailable: boolean; prescriptionNotes?: string };
+
+export async function updateAppointment(
   doctorId: string,
   bookingId: string,
-  status: AppointmentStatus,
+  payload: AppointmentActionPayload,
 ): Promise<BookingConfirmation> {
   const response = await fetch(`/api/doctor/appointments/${bookingId}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ doctorId, status }),
+    body: JSON.stringify({ doctorId, ...payload }),
   });
   return parse<BookingConfirmation>(response);
 }

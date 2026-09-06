@@ -42,3 +42,43 @@ export function formatTime12h(time: string): string {
   const hour12 = hour % 12 === 0 ? 12 : hour % 12;
   return `${hour12}:${minuteStr} ${period}`;
 }
+
+// Combine a "YYYY-MM-DD" date and "HH:MM" time into a real local Date, so
+// appointment moments can be compared against "now" for past/future logic.
+export function toDateTime(date: string, time: string): Date {
+  return new Date(`${date}T${time}:00`);
+}
+
+export function isPastMoment(date: string, time: string, from: Date = new Date()): boolean {
+  return toDateTime(date, time).getTime() < from.getTime();
+}
+
+export function startOfWeek(date: Date): Date {
+  const copy = new Date(date);
+  const day = copy.getDay();
+  copy.setDate(copy.getDate() - day);
+  copy.setHours(0, 0, 0, 0);
+  return copy;
+}
+
+export function addDays(date: Date, count: number): Date {
+  const copy = new Date(date);
+  copy.setDate(copy.getDate() + count);
+  return copy;
+}
+
+export function startOfMonth(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), 1);
+}
+
+// Full 6x7 calendar grid for a month view, including the trailing/leading
+// days from adjacent months needed to fill whole weeks.
+export function monthGrid(date: Date): Date[] {
+  const first = startOfMonth(date);
+  const gridStart = startOfWeek(first);
+  return Array.from({ length: 42 }, (_, index) => addDays(gridStart, index));
+}
+
+export function formatShortDate(iso: string): string {
+  return new Intl.DateTimeFormat("en", { day: "numeric", month: "short" }).format(new Date(`${iso}T00:00:00`));
+}
