@@ -53,7 +53,6 @@ export type BookingConfirmation = {
   cancelReason?: string;
   rescheduleHistory?: RescheduleEntry[];
   prescriptionAvailable?: boolean;
-  prescriptionNotes?: string;
   prescriptionIssuedAt?: string;
   reviewed?: boolean;
   reviewRating?: number;

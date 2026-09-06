@@ -6,12 +6,10 @@ type RouteContext = { params: Promise<{ bookingId: string }> };
 
 type ActionBody = {
   doctorId?: string;
-  action?: "confirm" | "decline" | "cancel" | "reschedule" | "complete" | "missed" | "prescription";
+  action?: "confirm" | "decline" | "cancel" | "reschedule" | "complete" | "missed";
   reason?: string;
   date?: string;
   time?: string;
-  prescriptionAvailable?: boolean;
-  prescriptionNotes?: string;
 };
 
 export async function PATCH(request: Request, { params }: RouteContext) {
@@ -139,11 +137,6 @@ export async function PATCH(request: Request, { params }: RouteContext) {
         return Response.json({ error: "Only confirmed appointments can be marked completed" }, { status: 409 });
       }
       booking.status = "completed";
-      if (body.prescriptionAvailable) {
-        booking.prescriptionAvailable = true;
-        booking.prescriptionNotes = body.prescriptionNotes || "";
-        booking.prescriptionIssuedAt = new Date().toISOString();
-      }
       if (booking.userId) {
         addNotification({
           recipientType: "user",
@@ -153,16 +146,6 @@ export async function PATCH(request: Request, { params }: RouteContext) {
           title: "Appointment completed",
           message: `Your visit with ${doctorName} on ${whenLabel()} is marked completed.`,
         });
-        if (booking.prescriptionAvailable) {
-          addNotification({
-            recipientType: "user",
-            recipientId: booking.userId,
-            bookingId: booking.id,
-            kind: "prescription",
-            title: "Prescription available",
-            message: `${doctorName} added a prescription for your ${whenLabel()} visit.`,
-          });
-        }
       }
       break;
     }
@@ -179,26 +162,6 @@ export async function PATCH(request: Request, { params }: RouteContext) {
           kind: "missed",
           title: "Appointment missed",
           message: `You missed your appointment with ${doctorName} on ${whenLabel()}.`,
-        });
-      }
-      break;
-    }
-    case "prescription": {
-      if (booking.status !== "completed") {
-        return Response.json({ error: "Prescriptions can only be added to completed appointments" }, { status: 409 });
-      }
-      const wasAvailable = booking.prescriptionAvailable;
-      booking.prescriptionAvailable = Boolean(body.prescriptionAvailable);
-      booking.prescriptionNotes = body.prescriptionNotes || "";
-      booking.prescriptionIssuedAt = new Date().toISOString();
-      if (booking.prescriptionAvailable && !wasAvailable && booking.userId) {
-        addNotification({
-          recipientType: "user",
-          recipientId: booking.userId,
-          bookingId: booking.id,
-          kind: "prescription",
-          title: "Prescription available",
-          message: `${doctorName} added a prescription for your ${whenLabel()} visit.`,
         });
       }
       break;

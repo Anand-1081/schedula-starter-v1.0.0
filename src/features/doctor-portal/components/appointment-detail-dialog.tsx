@@ -4,9 +4,14 @@ import { Button } from "@/components/ui/button";
 import { AlertIcon, StarIcon } from "@/components/ui/icons";
 import { STATUS_STYLES } from "@/features/doctor-portal/components/appointment-row";
 import { getAvailability } from "@/features/booking/api/booking-client";
+import { saveDoctorPrescription } from "@/features/prescriptions/api/prescriptions-client";
+import { usePrescription } from "@/features/prescriptions/hooks/use-prescription";
+import { PrescriptionFormDialog } from "@/features/prescriptions/components/prescription-form-dialog";
+import { PrescriptionView } from "@/features/prescriptions/components/prescription-view";
 import type { AppointmentActionPayload } from "@/features/doctor-portal/api/doctor-portal-client";
 import { formatLongDate, formatTime12h, isPastMoment, toIsoDate } from "@/lib/utils/date";
 import type { BookingConfirmation } from "@/types/booking";
+import type { PrescriptionInput, Prescription } from "@/types/prescription";
 
 type ConfirmKind = "decline" | "cancel" | null;
 
@@ -29,8 +34,13 @@ export function AppointmentDetailDialog({
   const [newTime, setNewTime] = useState<string>();
   const [slotsLoading, setSlotsLoading] = useState(false);
 
-  const [prescriptionAvailable, setPrescriptionAvailable] = useState(appointment.prescriptionAvailable ?? false);
-  const [prescriptionNotes, setPrescriptionNotes] = useState(appointment.prescriptionNotes ?? "");
+  const [prescriptionForm, setPrescriptionForm] = useState(false);
+  const [savedPrescription, setSavedPrescription] = useState<Prescription | null>(null);
+  const { prescription: fetchedPrescription, status: prescriptionStatus } = usePrescription(
+    appointment.status === "completed" ? appointment.id : undefined,
+    { doctorId: appointment.doctorId },
+  );
+  const prescription = savedPrescription ?? fetchedPrescription;
 
   const isPast = isPastMoment(appointment.date, appointment.time);
 
@@ -58,16 +68,9 @@ export function AppointmentDetailDialog({
     }
   }
 
-  async function submitPrescription() {
-    setBusy(true);
-    setError(undefined);
-    try {
-      await onAction({ action: "prescription", prescriptionAvailable, prescriptionNotes });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to save the prescription.");
-    } finally {
-      setBusy(false);
-    }
+  async function submitPrescription(input: PrescriptionInput) {
+    const record = await saveDoctorPrescription(appointment.doctorId, appointment.id, input);
+    setSavedPrescription(record);
   }
 
   return (
@@ -173,119 +176,122 @@ export function AppointmentDetailDialog({
           </div>
         )}
 
-        {/* Confirmed, in the future: reschedule / cancel */}
-        {appointment.status === "confirmed" && !isPast && (
-          <div className="mt-5 border-t border-[var(--line)] pt-4">
-            {!rescheduling && confirming !== "cancel" && (
-              <div className="flex flex-wrap gap-2.5">
-                <Button variant="secondary" onClick={() => setRescheduling(true)} disabled={busy}>
-                  Reschedule
-                </Button>
-                <Button variant="secondary" className="border-red-300 text-red-800 hover:border-red-400" onClick={() => setConfirming("cancel")} disabled={busy}>
-                  Cancel
-                </Button>
-              </div>
-            )}
-
-            {rescheduling && (
-              <div className="space-y-3 rounded-lg border border-[var(--line)] p-3.5">
-                <p className="text-sm font-medium">Move to a new slot</p>
-                <input
-                  type="date"
-                  value={newDate}
-                  min={toIsoDate(new Date())}
-                  onChange={(event) => setNewDate(event.target.value)}
-                  className="w-full rounded-lg border border-[var(--line)] px-3 py-2 text-sm"
-                />
-                {slotsLoading ? (
-                  <p className="text-sm text-[var(--muted)]">Loading available slots&hellip;</p>
-                ) : availableTimes.length === 0 ? (
-                  <p className="text-sm text-[var(--muted)]">No open slots that day.</p>
-                ) : (
-                  <div className="flex flex-wrap gap-1.5">
-                    {availableTimes.map((time) => (
-                      <button
-                        key={time}
-                        type="button"
-                        onClick={() => setNewTime(time)}
-                        className={`rounded-lg border px-2.5 py-1.5 font-mono text-xs ${
-                          newTime === time ? "border-[var(--brand)] bg-emerald-50 text-[var(--brand-deep)]" : "border-[var(--line)]"
-                        }`}
-                      >
-                        {formatTime12h(time)}
-                      </button>
-                    ))}
+        {/* Confirmed: reschedule / cancel (only while the slot is still ahead), and
+            mark the outcome once the visit has actually happened — a doctor may see
+            a patient earlier or later than the booked slot, so this isn't gated on
+            the clock. */}
+        {appointment.status === "confirmed" && (
+          <div className="mt-5 space-y-4 border-t border-[var(--line)] pt-4">
+            {!isPast && (
+              <div>
+                {!rescheduling && confirming !== "cancel" && (
+                  <div className="flex flex-wrap gap-2.5">
+                    <Button variant="secondary" onClick={() => setRescheduling(true)} disabled={busy}>
+                      Reschedule
+                    </Button>
+                    <Button variant="secondary" className="border-red-300 text-red-800 hover:border-red-400" onClick={() => setConfirming("cancel")} disabled={busy}>
+                      Cancel
+                    </Button>
                   </div>
                 )}
-                <div className="flex gap-2.5">
-                  <Button
-                    disabled={!newTime}
-                    loading={busy}
-                    onClick={() => newTime && run({ action: "reschedule", date: newDate, time: newTime })}
-                  >
-                    Confirm new slot
+
+                {rescheduling && (
+                  <div className="space-y-3 rounded-lg border border-[var(--line)] p-3.5">
+                    <p className="text-sm font-medium">Move to a new slot</p>
+                    <input
+                      type="date"
+                      value={newDate}
+                      min={toIsoDate(new Date())}
+                      onChange={(event) => setNewDate(event.target.value)}
+                      className="w-full rounded-lg border border-[var(--line)] px-3 py-2 text-sm"
+                    />
+                    {slotsLoading ? (
+                      <p className="text-sm text-[var(--muted)]">Loading available slots&hellip;</p>
+                    ) : availableTimes.length === 0 ? (
+                      <p className="text-sm text-[var(--muted)]">No open slots that day.</p>
+                    ) : (
+                      <div className="flex flex-wrap gap-1.5">
+                        {availableTimes.map((time) => (
+                          <button
+                            key={time}
+                            type="button"
+                            onClick={() => setNewTime(time)}
+                            className={`rounded-lg border px-2.5 py-1.5 font-mono text-xs ${
+                              newTime === time ? "border-[var(--brand)] bg-emerald-50 text-[var(--brand-deep)]" : "border-[var(--line)]"
+                            }`}
+                          >
+                            {formatTime12h(time)}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    <div className="flex gap-2.5">
+                      <Button
+                        disabled={!newTime}
+                        loading={busy}
+                        onClick={() => newTime && run({ action: "reschedule", date: newDate, time: newTime })}
+                      >
+                        Confirm new slot
+                      </Button>
+                      <Button variant="ghost" onClick={() => setRescheduling(false)} disabled={busy}>
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {confirming === "cancel" && (
+                  <div className="rounded-lg border border-red-200 bg-red-50 p-3.5">
+                    <p className="text-sm font-medium text-red-800">Cancel this appointment? The patient will be notified.</p>
+                    <div className="mt-3 flex gap-2.5">
+                      <Button variant="secondary" className="border-red-300 text-red-800 hover:border-red-400" loading={busy} onClick={() => run({ action: "cancel" })}>
+                        Yes, cancel
+                      </Button>
+                      <Button variant="ghost" onClick={() => setConfirming(null)} disabled={busy}>
+                        Never mind
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {!rescheduling && confirming === null && (
+              <div>
+                <p className="mb-3 text-sm text-[var(--muted)]">
+                  {isPast ? "This visit's time has passed. Update the outcome:" : "Already seen the patient? Update the outcome now:"}
+                </p>
+                <div className="flex flex-wrap gap-2.5">
+                  <Button onClick={() => run({ action: "complete" })} loading={busy}>
+                    Mark as completed
                   </Button>
-                  <Button variant="ghost" onClick={() => setRescheduling(false)} disabled={busy}>
-                    Cancel
+                  <Button variant="secondary" className="border-red-300 text-red-800 hover:border-red-400" onClick={() => run({ action: "missed" })} disabled={busy}>
+                    Mark as missed
                   </Button>
                 </div>
               </div>
             )}
-
-            {confirming === "cancel" && (
-              <div className="rounded-lg border border-red-200 bg-red-50 p-3.5">
-                <p className="text-sm font-medium text-red-800">Cancel this appointment? The patient will be notified.</p>
-                <div className="mt-3 flex gap-2.5">
-                  <Button variant="secondary" className="border-red-300 text-red-800 hover:border-red-400" loading={busy} onClick={() => run({ action: "cancel" })}>
-                    Yes, cancel
-                  </Button>
-                  <Button variant="ghost" onClick={() => setConfirming(null)} disabled={busy}>
-                    Never mind
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Confirmed, time has passed: mark completed / missed */}
-        {appointment.status === "confirmed" && isPast && (
-          <div className="mt-5 border-t border-[var(--line)] pt-4">
-            <p className="mb-3 text-sm text-[var(--muted)]">This visit&apos;s time has passed. Update the outcome:</p>
-            <div className="flex flex-wrap gap-2.5">
-              <Button onClick={() => run({ action: "complete", prescriptionAvailable, prescriptionNotes })} loading={busy}>
-                Mark as completed
-              </Button>
-              <Button variant="secondary" className="border-red-300 text-red-800 hover:border-red-400" onClick={() => run({ action: "missed" })} disabled={busy}>
-                Mark as missed
-              </Button>
-            </div>
           </div>
         )}
 
         {/* Completed: read-only + prescription management */}
         {appointment.status === "completed" && (
-          <div className="mt-5 space-y-3 border-t border-[var(--line)] pt-4">
-            <label className="flex items-center gap-2 text-sm font-medium">
-              <input
-                type="checkbox"
-                checked={prescriptionAvailable}
-                onChange={(event) => setPrescriptionAvailable(event.target.checked)}
-              />
-              Prescription available for the patient
-            </label>
-            {prescriptionAvailable && (
-              <textarea
-                rows={3}
-                value={prescriptionNotes}
-                onChange={(event) => setPrescriptionNotes(event.target.value)}
-                placeholder="Medication, dosage, and follow-up instructions"
-                className="w-full rounded-lg border border-[var(--line)] px-3.5 py-2.5 text-sm outline-none focus:border-[var(--brand)]"
-              />
+          <div className="mt-5 border-t border-[var(--line)] pt-4">
+            {prescriptionStatus === "loading" ? (
+              <div className="h-16 animate-pulse rounded-lg bg-stone-100" aria-busy="true" aria-label="Checking prescription" />
+            ) : prescription ? (
+              <div className="space-y-3">
+                <PrescriptionView prescription={prescription} />
+                <Button variant="secondary" onClick={() => setPrescriptionForm(true)}>
+                  Edit prescription
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <p className="text-sm text-[var(--muted)]">No prescription added yet.</p>
+                <Button onClick={() => setPrescriptionForm(true)}>Add prescription</Button>
+              </div>
             )}
-            <Button onClick={submitPrescription} loading={busy}>
-              Save prescription
-            </Button>
           </div>
         )}
 
@@ -296,6 +302,15 @@ export function AppointmentDetailDialog({
           </p>
         )}
       </div>
+
+      {prescriptionForm && (
+        <PrescriptionFormDialog
+          booking={appointment}
+          existing={prescription}
+          onClose={() => setPrescriptionForm(false)}
+          onSave={submitPrescription}
+        />
+      )}
     </div>
   );
 }

@@ -49,9 +49,8 @@ export type AppointmentActionPayload =
   | { action: "decline"; reason?: string }
   | { action: "cancel"; reason?: string }
   | { action: "reschedule"; date: string; time: string }
-  | { action: "complete"; prescriptionAvailable?: boolean; prescriptionNotes?: string }
-  | { action: "missed" }
-  | { action: "prescription"; prescriptionAvailable: boolean; prescriptionNotes?: string };
+  | { action: "complete" }
+  | { action: "missed" };
 
 export async function updateAppointment(
   doctorId: string,

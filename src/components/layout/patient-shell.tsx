@@ -9,6 +9,7 @@ const NAV_LINKS = [
   { href: "/patient/dashboard", label: "Dashboard" },
   { href: "/doctors", label: "Find a doctor" },
   { href: "/appointments", label: "My appointments" },
+  { href: "/patient/profile", label: "Profile" },
 ];
 
 export function PatientShell({ children }: { children: React.ReactNode }) {
